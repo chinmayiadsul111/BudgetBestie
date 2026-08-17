@@ -1,0 +1,32 @@
+# Core agent framework
+langgraph==0.2.60
+langchain==0.3.13
+langchain-core==0.3.28
+langchain-community==0.3.13
+langchain-text-splitters==0.3.4
+
+# LLM providers (local + hosted)
+langchain-ollama==0.2.2
+langchain-openai==0.2.14
+
+# Retrieval
+faiss-cpu==1.9.0.post1
+
+# Backend
+fastapi==0.115.6
+uvicorn==0.34.0
+pydantic==2.10.4
+
+# Database
+sqlalchemy==2.0.36
+
+# Config & env
+pyyaml==6.0.2
+python-dotenv==1.0.1
+
+# GPU/CPU detection (torch is used only for cuda availability probing +
+# optional local model acceleration; CPU-only install is fine for the demo)
+torch==2.5.1
+
+# Observability
+langsmith==0.2.10

@@ -1,0 +1,108 @@
+# =============================================================================
+# BudgetBestie — Multi-Agent Self-Reflective Finance Assistant
+# Central configuration. Nothing in src/ should hardcode values that live here.
+# =============================================================================
+
+app:
+  name: "BudgetBestie"
+  version: "0.1.0"
+  environment: "local"          # local | staging | production
+
+# -----------------------------------------------------------------------------
+# COMPUTE — auto-detect GPU/CPU at runtime. "auto" lets device_utils.py decide.
+# Force "cpu" or "cuda" here to override auto-detection (e.g. for reproducible
+# benchmarking, or a machine with a flaky GPU driver).
+# -----------------------------------------------------------------------------
+compute:
+  device: "cpu"                 # auto | cpu | cuda
+  fallback_to_cpu_on_error: true # if cuda requested but unavailable/errors, don't crash
+  log_device_selection: true
+
+# -----------------------------------------------------------------------------
+# LLM PROVIDER — this is the switch between local (Ollama) and hosted API
+# models. Swapping provider should require touching ONLY this block.
+# -----------------------------------------------------------------------------
+llm:
+  provider: "ollama"             # ollama | azure_openai | openai
+  temperature: 0.2
+  max_tokens: 1024
+  request_timeout_seconds: 60
+
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "phi:latest"
+    keep_alive: "5m"
+
+  azure_openai:
+    # Values pulled from env at runtime (see .env.example) — never hardcode
+    # secrets in this file. api_key / endpoint / deployment come from env.
+    deployment: "gpt-4o"
+    api_version: "2024-08-01-preview"
+
+  openai:
+    model: "gpt-4o-mini"
+
+# -----------------------------------------------------------------------------
+# EMBEDDINGS — used for FAISS retrieval over financial SOP documents.
+# Same provider-switch pattern as the LLM block.
+# -----------------------------------------------------------------------------
+embeddings:
+  provider: "ollama"             # ollama | openai
+  ollama:
+    model: "nomic-embed-text"
+    base_url: "http://localhost:11434"
+  openai:
+    model: "text-embedding-3-small"
+
+# -----------------------------------------------------------------------------
+# RETRIEVAL (FAISS)
+# -----------------------------------------------------------------------------
+retrieval:
+  index_path: "data/faiss_index"
+  sop_docs_dir: "data/sop_docs"
+  chunk_size: 500
+  chunk_overlap: 75
+  top_k: 4
+  similarity_threshold: 0.35     # below this, Retrieval agent flags "low confidence context"
+
+# -----------------------------------------------------------------------------
+# DATABASE — transactions store queried by the Reasoning agent's SQL step.
+# SQLite by default so the project runs with zero infra; swap the URL to a
+# Postgres DSN in production without touching any code (SQLAlchemy handles both).
+# -----------------------------------------------------------------------------
+database:
+  url: "sqlite:///data/transactions.db"
+  echo_sql: false
+  seed_on_missing: true
+
+# -----------------------------------------------------------------------------
+# SELF-REFLECTION / HALLUCINATION CONTROL
+# -----------------------------------------------------------------------------
+reflection:
+  confidence_threshold: 0.7      # Critic rejects answers below this
+  max_refine_loops: 2            # cap on Reasoning<->Critic retries before giving up honestly
+  require_citation_for_financial_claims: true
+
+# -----------------------------------------------------------------------------
+# OBSERVABILITY — LangSmith tracing + structured logging
+# -----------------------------------------------------------------------------
+observability:
+  langsmith:
+    enabled: true
+    project_name: "budgetbestie"
+    # api_key comes from env: LANGCHAIN_API_KEY
+  logging:
+    level: "INFO"                 # DEBUG | INFO | WARNING | ERROR
+    json_logs_dir: "logs"
+    json_log_filename: "budgetbestie.log.json"
+    console_pretty: true          # human-readable in terminal, JSON in file
+    rotate_max_bytes: 5_000_000
+    rotate_backup_count: 5
+
+# -----------------------------------------------------------------------------
+# API SERVER
+# -----------------------------------------------------------------------------
+server:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false
