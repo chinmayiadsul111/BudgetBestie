@@ -96,7 +96,7 @@ Full command reference: [`COMMANDS.md`](COMMANDS.md)
 - [`docs/PROJECT_EXPLAINED.md`](docs/PROJECT_EXPLAINED.md) — what this does and why, in plain language
 - [`docs/ENGINEERING_DECISIONS.md`](docs/ENGINEERING_DECISIONS.md) — design choices and alternatives considered
 - [`docs/LEARNINGS.md`](docs/LEARNINGS.md) — what building this taught me
-- [`INTERVIEW_PREP.md`](INTERVIEW_PREP.md) — technical Q&A prep for this project
+
 
 ## Project structure
 
@@ -119,7 +119,7 @@ budgetbestie/
 ├── data/sop_docs/        # financial guidance knowledge base (RAG source)
 ├── run.py                # start the API server
 ├── demo.py                # interactive terminal demo
-└── docs/, INTERVIEW_PREP.md, COMMANDS.md
+└── docs/,  COMMANDS.md
 ```
 
 ## Disclaimer
